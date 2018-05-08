@@ -1,5 +1,6 @@
 #include "leds.hpp"
 
+
 LED::LED(std::string path):led_path(path)
 {
 }
@@ -28,7 +29,6 @@ void LED::setBrightness(int value)
 {
 
     fs_brightness << value;
-
     fs_brightness.clear();
     fs_brightness.seekg(0, fs_brightness.beg);
 
