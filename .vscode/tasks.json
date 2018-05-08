@@ -1,0 +1,21 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "options": {
+        "env": {
+            "CXX" : "arm-poky-linux-gnueabi-g++ -march=armv7ve -marm -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7 --sysroot=/opt/fsl-imx-x11/4.9.11-1.0.0/sysroots/cortexa7hf-neon-poky-linux-gnueabi"
+        }
+    },
+    "tasks": [
+        {
+            "label": "make",
+            "type": "shell",
+            "command": " $CXX -o test main.cpp leds.cpp",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
