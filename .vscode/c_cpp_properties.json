@@ -1,5 +1,4 @@
 {
-    
     "configurations": [
         {
             "name": "Mac",
@@ -33,7 +32,9 @@
                 "/opt/fsl-imx-x11/4.9.11-1.0.0/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/gnu",
                 "/opt/fsl-imx-x11/4.9.11-1.0.0/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/6.2.0/arm-poky-linux-gnueabi"
             ],
-            "defines": [ "__ARM_PCS_VFP" ],
+            "defines": [
+                "__ARM_PCS_VFP"
+            ],
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
@@ -72,5 +73,5 @@
             }
         }
     ],
-    "version": 3
+    "version": 4
 }

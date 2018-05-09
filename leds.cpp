@@ -3,6 +3,7 @@
 
 LED::LED(std::string path):led_path(path)
 {
+  open();
 }
 
 void LED::open()
@@ -10,7 +11,7 @@ void LED::open()
     if(!led_path.empty())
     {
         fs_brightness.open(led_path);
-        std::cout << led_path << " open" << std::endl; 
+       
     }
 }
 

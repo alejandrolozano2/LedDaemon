@@ -4,9 +4,9 @@
 #include "leds.hpp"
 #include <vector>
 
+typedef  std::vector<LED> LED_STRIP_CONTAINER;
 
-
-class LEDRGB
+class LEDRGB: public LED_STRIP_CONTAINER
 {
 
 public:
@@ -18,14 +18,12 @@ public:
         eBLUE
     }eLED_t;
 
-
     LEDRGB();
     LEDRGB(std::string  r, std::string  g, std::string  b );
     void setBrightnessLED(eLED_t, int ) ; 
     void setBrightness(int );
+    void open(eLED_t, std::string);
 
-private:
-    LED RGB[3];
 };
 
 
