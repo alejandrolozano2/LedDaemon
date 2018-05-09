@@ -11,7 +11,7 @@
         {
             "label": "make",
             "type": "shell",
-            "command": " $CXX -o test main.cpp leds.cpp ledrgb.cpp ",
+            "command": " $CXX -o test main.cpp leds.cpp ledstrip.cpp ",
             "group": {
                 "kind": "build",
                 "isDefault": true
