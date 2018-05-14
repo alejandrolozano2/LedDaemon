@@ -28,8 +28,7 @@ typedef struct
 void *runAnimation(void *arg)
 {
     pshared_data_t * mData  = (pshared_data_t *)arg;
-    
-    
+        
     while(true)
     {
         pthread_mutex_lock(mData->mtx);
@@ -46,17 +45,14 @@ int main()
 
     mqd_t msq;
     struct mq_attr attr;
-    /*Initialize the queue attributes*/
     char new_state_buffer[MAX_SIZE] = {0};
     char current_state_buffer[MAX_SIZE] = {0};
     ssize_t bytes_read;
     pshared_data_t mypThreadData;
-
     pthread_t th;
     pthread_mutex_t mxq; /* mutex used as quit flag */
 
     ANIMATION * animationhandler;
-    ANIMATION * panimationhandler;
 
     std::cout << "LED Daemon Started" << std::endl;
 
@@ -79,7 +75,6 @@ int main()
     pthread_mutex_init(&mxq,NULL);
 
     /*Begin Idle State*/
-   // panimationhandler = &idleAnimation;
     startupAnimation.runAnimation(myLEDS);
 
     /*Init Data for pthread*/
