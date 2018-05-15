@@ -28,13 +28,27 @@ typedef struct
 void *runAnimation(void *arg)
 {
     pshared_data_t * mData  = (pshared_data_t *)arg;
-        
+    ANIMATION * lptrAnimation = mData->ptrAnimation;
+
+    int time;  
     while(true)
     {
-        pthread_mutex_lock(mData->mtx);
-        mData->ptrAnimation->runAnimation(*mData->ptrMyLEDS);        
-        pthread_mutex_unlock(mData->mtx);
-        usleep(1000);
+
+        for(int state = 0; state < mData->ptrAnimation->getSizeStates() ; state++)
+        {
+            pthread_mutex_lock(mData->mtx);
+            mData->ptrAnimation->setState(*mData->ptrMyLEDS,state);
+            time = mData->ptrAnimation->getTime(state)* 1000;
+            pthread_mutex_unlock(mData->mtx);
+            usleep(time);
+
+            if(lptrAnimation != mData->ptrAnimation)
+            {
+                lptrAnimation = mData->ptrAnimation;
+                break;
+            }
+        }
+
     }
     return NULL;
 }
@@ -58,6 +72,7 @@ int main()
 
     /*Create LED array from config file*/
     LEDSTRIP myLEDS("leds.conf");
+
     /*Create Annimation from animation files*/
     ANIMATION idleAnimation("idle.animation");
     ANIMATION startupAnimation("startup.animation");
@@ -75,7 +90,7 @@ int main()
     pthread_mutex_init(&mxq,NULL);
 
     /*Begin Idle State*/
-    startupAnimation.runAnimation(myLEDS);
+   // startupAnimation.runAnimation(myLEDS);
 
     /*Init Data for pthread*/
     mypThreadData.mtx = &mxq;

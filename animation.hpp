@@ -24,6 +24,7 @@ typedef struct
 public:
     ANIMATION();
     ANIMATION(const char *);
+    int getSizeStates();
     void runAnimation(LEDSTRIP &);
     void setState(LEDSTRIP &, int);
     int getTime(int state);

@@ -42,6 +42,11 @@ void ANIMATION::fill_ledvalues(std::string & linestr, int line)
    
 }
 
+int ANIMATION::getSizeStates()
+{
+    return strip_state.size();
+}
+
 void ANIMATION::setState(LEDSTRIP & myLEDs, int state)
 {
     int  brightvalue;
@@ -50,7 +55,7 @@ void ANIMATION::setState(LEDSTRIP & myLEDs, int state)
     {
         myLEDs.setBrightnessLED(brightvalue, strip_state[state].ledvalues[brightvalue]);
     }
-    usleep(strip_state[state].time_ms * 1000 );
+
 
 }
 
@@ -59,6 +64,7 @@ int ANIMATION::getTime(int state)
     return strip_state[state].time_ms;
 }
 
+/*One shot Animation*/
 void ANIMATION::runAnimation(LEDSTRIP & myLEDs)
 {
     int state, brightvalue;
@@ -68,5 +74,6 @@ void ANIMATION::runAnimation(LEDSTRIP & myLEDs)
     {
 
         setState(myLEDs,state);
+        usleep(strip_state[state].time_ms * 1000 );
     }
 } 
