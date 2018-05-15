@@ -1,8 +1,6 @@
-//#define _GLIBCXX_USE_CXX11_ABI 0
-
-
 #include <iostream>
 #include <vector>
+#include <map>
 #include <mqueue.h>
 #include <stdio.h>
 #include <string.h>
@@ -42,7 +40,7 @@ void *runAnimation(void *arg)
             pthread_mutex_unlock(mData->mtx);
             usleep(time);
 
-            if(lptrAnimation != mData->ptrAnimation)
+            if(lptrAnimation != mData->ptrAnimation) 
             {
                 lptrAnimation = mData->ptrAnimation;
                 break;
@@ -64,8 +62,7 @@ int main()
     ssize_t bytes_read;
     pshared_data_t mypThreadData;
     pthread_t th;
-    pthread_mutex_t mxq; /* mutex used as quit flag */
-
+    pthread_mutex_t mxq;
     ANIMATION * animationhandler;
 
     std::cout << "LED Daemon Started" << std::endl;
@@ -74,12 +71,20 @@ int main()
     LEDSTRIP myLEDS("leds.conf");
 
     /*Create Annimation from animation files*/
-    ANIMATION idleAnimation("idle.animation");
-    ANIMATION startupAnimation("startup.animation");
-    ANIMATION listeningAnimation("listening.animation"); 
-    ANIMATION speakingAnimation("speaking.animation");
-    ANIMATION thinkingAnimation("thinking.animation");
+    typedef  std::map<std::string, ANIMATION * > listAnimation_t;
+    listAnimation_t listAnimation;
+    
+    std::fstream AnimationFile;
+    AnimationFile.open("Animations.conf");
+    std::string  lastanimationfile, animationfiles;
 
+    while(getline(AnimationFile,animationfiles))
+    {
+        listAnimation.insert(listAnimation_t::value_type(animationfiles , new ANIMATION(animationfiles.c_str())));
+        lastanimationfile = animationfiles;
+    }
+
+    /*Attributes of Message Queues*/
     attr.mq_flags = 0;
     attr.mq_maxmsg = 10;
     attr.mq_msgsize = MAX_SIZE;
@@ -89,53 +94,36 @@ int main()
     msq = mq_open( QUEUE_NAME, O_CREAT | O_RDONLY, 0644, &attr  );
     pthread_mutex_init(&mxq,NULL);
 
-    /*Begin Idle State*/
-   // startupAnimation.runAnimation(myLEDS);
-
     /*Init Data for pthread*/
     mypThreadData.mtx = &mxq;
-    mypThreadData.ptrAnimation = &startupAnimation;
+    /*Begin Idle State*/;
+    mypThreadData.ptrAnimation = listAnimation[lastanimationfile];
     mypThreadData.ptrMyLEDS = &myLEDS;
 
     /*Run Animation*/
     pthread_create(&th,NULL,runAnimation,&mypThreadData);
     
-    std::cout << "Start Server: " << std::endl;
+    std::string mystring; 
+    std::cout << "Start Server " << std::endl;
+
     while(true)
     {
-        /*Receive Bytes from Message Queue*/
+        /*Receive Bytes from Message Queue*/        
         bytes_read = mq_receive(msq, new_state_buffer, MAX_SIZE, NULL);
 
         /*If received message is different from previous*/ 
         if(strncmp(new_state_buffer, current_state_buffer, MAX_SIZE) != 0)
         {
+            /*Get animation*/
+            mystring = new_state_buffer;                       
+            animationhandler = listAnimation[new_state_buffer];
 
-            if (strncmp(new_state_buffer, "IDLE", 4) == 0) 
-            {
-                animationhandler = &idleAnimation;
-
-            } else if (strncmp(new_state_buffer, "LISTENING", 9) == 0) {
-                animationhandler = &listeningAnimation;
-
-		    } else if (strncmp(new_state_buffer, "SPEAKING", 8) == 0) {
-			    animationhandler = &speakingAnimation;
-
-		    } else if (strncmp(new_state_buffer, "THINKING", 8) == 0) {
-                animationhandler = &thinkingAnimation;
-
-		    } else if (strncmp(new_state_buffer, "START", 5) == 0) {
-                animationhandler = &startupAnimation;
-
-		    }
             strcpy(current_state_buffer,new_state_buffer);
-            
+
             pthread_mutex_lock(&mxq);
              mypThreadData.ptrAnimation = animationhandler;
             pthread_mutex_unlock(&mxq);
         }
-
-
-
     }
         
         mq_close(msq); 
